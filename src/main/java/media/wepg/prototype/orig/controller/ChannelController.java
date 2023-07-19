@@ -1,8 +1,8 @@
 package media.wepg.prototype.orig.controller;
 
 import jakarta.transaction.Transactional;
-import media.wepg.prototype.model.Channel;
-import media.wepg.prototype.service.ChannelService;
+import media.wepg.prototype.orig.model.Channel;
+import media.wepg.prototype.orig.service.ChannelService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +38,7 @@ public class ChannelController {
         return ResponseEntity.ok()
                 .body(allChannels);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<Optional<Channel>> getChannelsById(@PathVariable Long id){
         Optional<Channel> channel = channelService.getChannelsByServiceId(id);

@@ -1,9 +1,8 @@
 package media.wepg.prototype.orig.controller;
 
 import jakarta.transaction.Transactional;
-import media.wepg.prototype.model.Program;
+import media.wepg.prototype.orig.model.Program;
 import media.wepg.prototype.orig.service.ProgramService;
-import media.wepg.prototype.service.WepgService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,12 +15,12 @@ import java.util.List;
 @RestController
 @Transactional
 @RequestMapping("/api/orig/wepg/programs")
-public class WepgController {
+public class ProgramController {
 
     private final ProgramService programService;
 
     @Autowired
-    public WepgController(ProgramService programService) {
+    public ProgramController(ProgramService programService) {
         this.programService = programService;
     }
 
