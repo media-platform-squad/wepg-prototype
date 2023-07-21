@@ -72,10 +72,9 @@ public class ElasticSearchChannelQuery {
             Channel channel = response.source();
             logger.info("Channel name" + channel.getChannelName());
             return Optional.of(channel);
-        } else {
-            logger.info("Channel not found!");
         }
 
+        logger.info("Channel not found!");
         return Optional.empty();
     }
 
