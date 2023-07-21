@@ -7,8 +7,9 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.time.LocalDateTime;
 
-@Document(indexName = "programs")
+@Document(indexName = "prototype-programs")
 public class Program {
+
     @Id
     private Long serviceId;
 

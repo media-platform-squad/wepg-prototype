@@ -1,6 +1,7 @@
 package media.wepg.prototype.es.model;
 
 
+import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -8,7 +9,8 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.time.LocalDateTime;
 
-@Document(indexName = "channels")
+@Document(indexName = "prototype-channels")
+@Getter
 public class Channel {
 
     @Id
