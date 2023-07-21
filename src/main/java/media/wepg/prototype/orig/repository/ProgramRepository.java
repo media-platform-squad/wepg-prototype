@@ -12,5 +12,5 @@ import java.util.List;
 public interface ProgramRepository extends JpaRepository<Program, Long> {
 
     @Query("select pr from Program pr where pr.eventStartDate >= SYSDATE()-1 and pr.eventEndDate <= SYSDATE()+7 and pr.serviceId = :serviceId")
-    List<Program> findByServiceId(@Param("serviceId") Long serviceId);
+    List<Program> findAllByServiceId(@Param("serviceId") Long serviceId);
 }

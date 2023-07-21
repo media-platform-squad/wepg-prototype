@@ -17,11 +17,11 @@ public class ChannelService {
         this.channelRepository = channelRepository;
     }
 
-    public List<Channel> getAllChannels(){
+    public List<Channel> getAllChannels() {
         return channelRepository.findAll();
     }
 
-    public Optional<Channel> getChannelsByServiceId(Long id){
+    public Optional<Channel> getChannelsByServiceId(Long id) {
         return channelRepository.findById(id);
     }
 }

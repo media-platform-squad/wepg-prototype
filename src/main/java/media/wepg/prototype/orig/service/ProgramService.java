@@ -16,7 +16,7 @@ public class ProgramService {
         this.programRepository = programRepository;
     }
 
-    public List<Program> getProgramsByServiceId(Long serviceId){
-       return programRepository.findByServiceId(serviceId);
+    public List<Program> getProgramsByServiceId(Long serviceId) {
+        return programRepository.findAllByServiceId(serviceId);
     }
 }

@@ -1,6 +1,5 @@
 package media.wepg.prototype.orig.controller;
 
-import jakarta.transaction.Transactional;
 import media.wepg.prototype.orig.model.Channel;
 import media.wepg.prototype.orig.service.ChannelService;
 import org.slf4j.Logger;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,20 +30,20 @@ public class ChannelController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Channel>> getAllChannels(){
+    public ResponseEntity<List<Channel>> getAllChannels() {
         List<Channel> allChannels = channelService.getAllChannels();
 
-        logger.info(allChannels.stream().map(channel -> channel.getChannelName()).toString());
+        logger.info(allChannels.stream().map(Channel::getChannelName).toString());
 
         return ResponseEntity.ok()
                 .body(allChannels);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Channel>> getChannelsById(@PathVariable Long id){
+    public ResponseEntity<Channel> getChannelsById(@PathVariable("id") Long id) {
         Optional<Channel> channel = channelService.getChannelsByServiceId(id);
 
-        return ResponseEntity.ok()
-                .body(channel);
+        return channel.map(value -> ResponseEntity.ok()
+                .body(value)).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
