@@ -59,7 +59,7 @@ public class ElasticSearchConfig {
                 .build();
 
 
-        HttpHost[] httpHosts = uris.stream().map(uri -> new HttpHost(uri, 9200, "http")).toArray(HttpHost[]::new);
+        HttpHost[] httpHosts = getEsServerHosts();
 
         return RestClient.builder(httpHosts)
                 .setHttpClientConfigCallback(httpClientBuilder ->
@@ -67,5 +67,11 @@ public class ElasticSearchConfig {
                                 .setSSLContext(sslContext)
                                 .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE))
                 .build();
+    }
+
+    private HttpHost[] getEsServerHosts() {
+        return uris.stream()
+                .map(uri -> new HttpHost(uri, 9200, "http"))
+                .toArray(HttpHost[]::new);
     }
 }
