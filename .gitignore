@@ -49,3 +49,4 @@ secrets.yml
 
 ### properties ###
 *.properties
+*.yml

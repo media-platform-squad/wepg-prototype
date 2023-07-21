@@ -33,10 +33,10 @@ public class ProgramController {
         if (programs.isEmpty()) {
             logger.info(serviceId + "번 채널이 존재하지 않습니다.");
             return ResponseEntity.notFound().build();
-        } else {
-            logger.info(serviceId + "번 채널에 " + programs.size() + "개의 프로그램 정보가 존재합니다.");
-            return ResponseEntity.ok()
-                    .body(programs);
         }
+
+        logger.info(serviceId + "번 채널에 " + programs.size() + "개의 프로그램 정보가 존재합니다.");
+        return ResponseEntity.ok()
+                .body(programs);
     }
 }
