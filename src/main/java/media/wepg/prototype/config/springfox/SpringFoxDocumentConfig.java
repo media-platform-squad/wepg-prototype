@@ -1,4 +1,4 @@
-package media.wepg.prototype.config;
+package media.wepg.prototype.config.springfox;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

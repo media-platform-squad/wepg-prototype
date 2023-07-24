@@ -43,7 +43,8 @@ public class ChannelController {
     public ResponseEntity<Channel> getChannelsById(@PathVariable("id") Long id) {
         Optional<Channel> channel = channelService.getChannelsByServiceId(id);
 
-        return channel.map(value -> ResponseEntity.ok()
-                .body(value)).orElseGet(() -> ResponseEntity.notFound().build());
+        return channel
+                .map(value -> ResponseEntity.ok().body(value))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

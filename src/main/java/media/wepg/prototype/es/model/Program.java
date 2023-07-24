@@ -1,6 +1,5 @@
 package media.wepg.prototype.es.model;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -9,8 +8,7 @@ import java.time.LocalDateTime;
 
 @Document(indexName = "prototype-programs")
 public class Program {
-
-    @Id
+    @Field(type = FieldType.Long, name = "serviceId")
     private Long serviceId;
 
     @Field(type = FieldType.Text, name = "eventId")
