@@ -1,9 +1,10 @@
 package media.wepg.prototype.es.controller;
 
+import media.wepg.prototype.es.controller.response.common.ApiResponse;
 import media.wepg.prototype.es.model.Channel;
+import media.wepg.prototype.es.model.dto.response.ChannelResponseDto;
 import media.wepg.prototype.es.repository.EsChannelQuery;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -22,20 +23,21 @@ public class EsChannelController {
 
 
     @GetMapping("/getDocument")
-    public ResponseEntity getDocumentById(@RequestParam("id") Long id) throws IOException {
-        Optional<Channel> documentById = esChannelQuery.getDocumentById(id);
+    public ApiResponse<Object> getDocumentById(@RequestParam("id") Long id) throws IOException {
+        Optional<Channel> channelById = esChannelQuery.getDocumentById(id);
 
-        return documentById
-                .map(channel -> ResponseEntity.ok().body(channel.getChannelName()))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return channelById
+                .map(ch ->ApiResponse.ok(new ChannelResponseDto(ch)))
+                .orElseGet(ApiResponse::fail);
     }
 
-
     @PostMapping("/updateAllChannels")
-    public ResponseEntity updateAllChannels() throws IOException {
-        esChannelQuery.fetchAndIndexChannelData();
-
-        return ResponseEntity.ok()
-                .body("All programs were updated");
+    public ApiResponse<Object> updateAllChannels() {
+        try {
+            esChannelQuery.fetchAndIndexChannelData();
+        } catch (IOException e) {
+            return ApiResponse.fail(e.getMessage());
+        }
+        return ApiResponse.ok();
     }
 }

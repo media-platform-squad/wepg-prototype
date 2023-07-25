@@ -1,10 +1,11 @@
 package media.wepg.prototype.es.controller;
 
 import lombok.RequiredArgsConstructor;
+import media.wepg.prototype.es.controller.response.common.ApiResponse;
 import media.wepg.prototype.es.model.Program;
+import media.wepg.prototype.es.model.dto.response.ProgramResponseDto;
 import media.wepg.prototype.es.repository.EsProgramQuery;
 import media.wepg.prototype.es.util.DateTimeConverter;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -16,32 +17,26 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EsProgramController {
 
-    private final EsProgramQuery esProgramQuery2;
+    private final EsProgramQuery esProgramQuery;
 
     @PostMapping("/updateAllPrograms")
-    public ResponseEntity updateAllPrograms() throws IOException {
-        esProgramQuery2.fetchAndIndexProgramData();
+    public ApiResponse<Object> updateAllPrograms() throws IOException {
+        esProgramQuery.fetchAndIndexProgramData();
 
-        return ResponseEntity.ok()
-                .body("All programs were updated");
+        return ApiResponse.ok();
     }
 
     @GetMapping("/getPrograms")
-    public ResponseEntity getProgramsByServiceIdAndEventStartDate(
+    public ApiResponse<Object> getProgramsByServiceIdAndEventStartDate(
             @RequestParam("serviceId") Long serviceId,
             @RequestParam("eventStartDate") String dateString) {
 
         LocalDateTime eventStartDate = DateTimeConverter.convert(dateString);
 
-        List<Program> documentByServiceIdAndEventStartDate =
-                esProgramQuery2.getDocumentByServiceIdAndEventStartDate(serviceId, eventStartDate);
+        List<Program> programs = esProgramQuery.getDocumentByServiceIdAndEventStartDate(serviceId, eventStartDate);
 
-        if (documentByServiceIdAndEventStartDate.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok()
-                .body(documentByServiceIdAndEventStartDate.stream().map(d -> d.getServiceId() + "_" + d.getEventStartDate()));
+        if (programs.isEmpty()) return ApiResponse.fail();
+        return ApiResponse.ok(programs.stream().map(ProgramResponseDto::new));
     }
-
 
 }

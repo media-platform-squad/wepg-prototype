@@ -3,6 +3,7 @@ package media.wepg.prototype.es.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
+import media.wepg.prototype.es.model.dto.response.ChannelResponseDto;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -37,4 +38,7 @@ public class Channel {
     @Field(type = FieldType.Date, name = "updateDate")
     private LocalDateTime updateDate;
 
+    public ChannelResponseDto createDto() {
+        return new ChannelResponseDto(this);
+    }
 }

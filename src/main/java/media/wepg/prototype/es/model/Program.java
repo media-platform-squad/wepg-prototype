@@ -2,6 +2,7 @@ package media.wepg.prototype.es.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
+import media.wepg.prototype.es.model.dto.response.ProgramResponseDto;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -52,4 +53,8 @@ public class Program {
 
     @Field(type = FieldType.Date, name = "updateDate")
     private LocalDateTime updateDate;
+
+    public ProgramResponseDto createDto(){
+        return new ProgramResponseDto(this);
+    }
 }
