@@ -3,9 +3,9 @@ package media.wepg.prototype.es.controller;
 import lombok.RequiredArgsConstructor;
 import media.wepg.prototype.es.controller.response.common.ApiResponse;
 import media.wepg.prototype.es.model.Program;
+import media.wepg.prototype.es.model.dto.response.ProgramGroupByChannelResponseDto;
 import media.wepg.prototype.es.model.dto.response.ProgramResponseDto;
-import media.wepg.prototype.es.repository.EsProgramQuery;
-import media.wepg.prototype.es.util.DateTimeConverter;
+import media.wepg.prototype.es.service.EsProgramService;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -17,25 +17,43 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EsProgramController {
 
-    private final EsProgramQuery esProgramQuery;
+   private final EsProgramService programService;
 
     @PostMapping("/updateAllPrograms")
-    public ApiResponse<Object> updateAllPrograms() throws IOException {
-        esProgramQuery.fetchAndIndexProgramData();
+    public ApiResponse<Object> updateAllPrograms() {
+        try {
+            programService.updateProgramData();
+        } catch (IOException e) {
+            return ApiResponse.fail(e.getMessage());
+        }
 
         return ApiResponse.ok();
     }
+
+    @GetMapping("/getPrograms")
+    public ApiResponse<Object> getProgramsByServicesAndEventStartDate(
+            @RequestParam("serviceId") String serviceIds,
+            @RequestParam("eventStartDate") String dateString) {
+
+        List<ProgramGroupByChannelResponseDto> data = programService.getProgramsByServices(serviceIds, dateString);
+
+        if (data.isEmpty()) {
+            return ApiResponse.fail();
+        }
+           return ApiResponse.ok(data);
+    }
+
 
     @GetMapping("/getPrograms")
     public ApiResponse<Object> getProgramsByServiceIdAndEventStartDate(
             @RequestParam("serviceId") Long serviceId,
             @RequestParam("eventStartDate") String dateString) {
 
-        LocalDateTime eventStartDate = DateTimeConverter.convert(dateString);
+        List<Program> programs = programService.getProgramsByServiceAndEventStartDate(serviceId, dateString);
 
-        List<Program> programs = esProgramQuery.getDocumentByServiceIdAndEventStartDate(serviceId, eventStartDate);
-
-        if (programs.isEmpty()) return ApiResponse.fail();
+        if (programs.isEmpty()) {
+            return ApiResponse.fail();
+        }
         return ApiResponse.ok(programs.stream().map(ProgramResponseDto::new));
     }
 

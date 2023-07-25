@@ -5,6 +5,7 @@ import co.elastic.clients.elasticsearch.core.BulkRequest;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import lombok.extern.slf4j.Slf4j;
+import media.wepg.prototype.es.model.Channel;
 import media.wepg.prototype.es.util.BulkResponseResolver;
 import media.wepg.prototype.orig.model.ChannelOrigin;
 import media.wepg.prototype.orig.repository.ChannelRepository;
@@ -32,8 +33,8 @@ public class EsChannelQuery {
     }
 
 
-    public Optional<media.wepg.prototype.es.model.Channel> getDocumentById(Long id) throws IOException {
-        GetResponse<media.wepg.prototype.es.model.Channel> response = esClient.get(g -> g
+    public Optional<Channel> getDocumentById(Long id) throws IOException {
+        GetResponse<Channel> response = esClient.get(g -> g
                         .index(CHANNEL_INDEX_NAME)
                         .id(id.toString()),
                 media.wepg.prototype.es.model.Channel.class
