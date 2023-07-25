@@ -4,11 +4,10 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.BulkRequest;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.GetResponse;
+import lombok.extern.slf4j.Slf4j;
 import media.wepg.prototype.es.util.BulkResponseResolver;
 import media.wepg.prototype.orig.model.ChannelOrigin;
 import media.wepg.prototype.orig.repository.ChannelRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -17,9 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@Slf4j
 public class EsChannelQuery {
-    private static final Logger logger = LoggerFactory.getLogger(EsChannelQuery.class);
-
 
     private final ElasticsearchClient esClient;
     private final ChannelRepository channelRepository;
@@ -43,11 +41,11 @@ public class EsChannelQuery {
 
         if (response.found()) {
             media.wepg.prototype.es.model.Channel channel = response.source();
-            logger.info("Channel name" + channel.getChannelName());
+            log.info("Channel name" + channel.getChannelName());
             return Optional.of(channel);
         }
 
-        logger.info("Channel not found!");
+        log.info("Channel not found!");
         return Optional.empty();
     }
 
@@ -71,17 +69,17 @@ public class EsChannelQuery {
     }
 
 
-    private void indexChannelData(List<ChannelOrigin> channels) throws IOException {
+    private void indexChannelData(List<ChannelOrigin> channels) {
         channels.forEach(this::bulkChannelIndex);
     }
 
     private void bulkChannelIndex(ChannelOrigin channel) throws RuntimeException {
-        BulkResponse bulkResponse = null;
+        BulkResponse bulkResponse;
         try {
             bulkResponse = getChannelDataBulkResponse(channel);
-            BulkResponseResolver.resolveBulkResponse(bulkResponse, logger);
+            BulkResponseResolver.resolveBulkResponse(bulkResponse, log);
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }

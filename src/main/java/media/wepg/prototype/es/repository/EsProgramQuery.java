@@ -10,12 +10,11 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.TotalHits;
 import co.elastic.clients.elasticsearch.core.search.TotalHitsRelation;
+import lombok.extern.slf4j.Slf4j;
 import media.wepg.prototype.es.model.Program;
 import media.wepg.prototype.es.util.BulkResponseResolver;
 import media.wepg.prototype.orig.model.ProgramOrigin;
 import media.wepg.prototype.orig.repository.ProgramRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,14 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
+@Slf4j
 public class EsProgramQuery {
-    private static final Logger logger = LoggerFactory.getLogger(EsProgramQuery.class);
-
 
     private final ElasticsearchClient esClient;
     private final ProgramRepository programRepository;
 
-    private final static Integer PAGE_SIZE = 1000;
+    private static final int PAGE_SIZE = 1000;
     private static final String PROGRAM_INDEX_NAME = "prototype-programs";
     private static final String SERVICE_ID_FIELD_NAME = "serviceId";
     private static final String EVENT_START_DATE_FIELD_NAME = "eventStartDate";
@@ -63,8 +61,6 @@ public class EsProgramQuery {
     }
 
     private SearchResponse<Program> getQueryResultsByServiceIdAndEventStartDate(Query byServiceId, Query byEventStartDate) throws IOException {
-        System.out.println("byServiceId = " + byServiceId);
-        System.out.println("byEventStartDate = " + byEventStartDate);
         return esClient.search(s -> s
                         .index(PROGRAM_INDEX_NAME)
                         .query(q -> q.bool(b -> b
@@ -99,9 +95,9 @@ public class EsProgramQuery {
         boolean isExactResult = totalHits.relation() == TotalHitsRelation.Eq;
 
         if (isExactResult) {
-            logger.info("There are " + totalHits.value() + " results");
+            log.info("There are " + totalHits.value() + " results");
         } else {
-            logger.info("There are more than " + totalHits.value() + " results");
+            log.info("There are more than " + totalHits.value() + " results");
         }
     }
 
@@ -110,7 +106,7 @@ public class EsProgramQuery {
         for (Hit<Program> hit : hits) {
             Program program = hit.source();
             programResult.add(program);
-            logger.info("Found product " + program.getTitleName() + ", score " + hit.score());
+            log.info("Found product " + program.getTitleName() + ", score " + hit.score());
         }
         return programResult;
     }
@@ -126,7 +122,7 @@ public class EsProgramQuery {
             Page<ProgramOrigin> programPage = programRepository.findByEventStartDateAndEventEndDate(
                     PageRequest.of(page++, PAGE_SIZE)
             );
-            logger.info("programPage = " + page + " " + programPage.getNumberOfElements());
+            log.info("programPage = " + page + " " + programPage.getNumberOfElements());
             batchData = programPage.getContent();
             indexProgramData(batchData);
         } while (!batchData.isEmpty());
@@ -146,13 +142,13 @@ public class EsProgramQuery {
     }
 
     private void indexProgramData(List<ProgramOrigin> programOrigins) {
-        BulkResponse bulkResponse = null;
+        BulkResponse bulkResponse;
         if (programOrigins.isEmpty()) {
             return;
         }
         try {
             bulkResponse = bulkBatchData(programOrigins);
-            BulkResponseResolver.resolveBulkResponse(bulkResponse, logger);
+            BulkResponseResolver.resolveBulkResponse(bulkResponse, log);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -162,13 +158,11 @@ public class EsProgramQuery {
     private BulkResponse bulkBatchData(List<ProgramOrigin> data) throws RuntimeException, IOException {
         BulkRequest.Builder br = new BulkRequest.Builder();
 
-        data.forEach(d -> {
-            br.operations(op -> op
-                    .index(idx -> idx
-                            .index(PROGRAM_INDEX_NAME)
-                            .document(d))
-            );
-        });
+        data.forEach(d -> br.operations(op -> op
+                .index(idx -> idx
+                        .index(PROGRAM_INDEX_NAME)
+                        .document(d))
+        ));
 
         return esClient.bulk(br.build());
     }
