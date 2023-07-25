@@ -46,15 +46,15 @@ public class EsProgramController {
 
     @GetMapping("/getPrograms")
     public ApiResponse<Object> getProgramsByServiceIdAndEventStartDate(
-            @RequestParam("serviceId") Long serviceId,
+            @RequestParam("serviceId") String serviceIds,
             @RequestParam("eventStartDate") String dateString) {
 
-        List<Program> programs = programService.getProgramsByServiceAndEventStartDate(serviceId, dateString);
+        List<ProgramResponseDto> data = programService.getProgramsByServiceAndEventStartDate(serviceIds, dateString);
 
-        if (programs.isEmpty()) {
+        if (data.isEmpty()) {
             return ApiResponse.fail();
         }
-        return ApiResponse.ok(programs.stream().map(ProgramResponseDto::new));
+        return ApiResponse.ok(data);
     }
 
 }

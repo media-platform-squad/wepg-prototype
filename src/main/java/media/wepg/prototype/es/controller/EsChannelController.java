@@ -3,10 +3,7 @@ package media.wepg.prototype.es.controller;
 import lombok.RequiredArgsConstructor;
 import media.wepg.prototype.es.controller.response.common.ApiResponse;
 import media.wepg.prototype.es.model.Channel;
-import media.wepg.prototype.es.model.dto.response.ChannelResponseDto;
-import media.wepg.prototype.es.repository.EsChannelQuery;
 import media.wepg.prototype.es.service.EsChannelService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -41,7 +38,7 @@ public class EsChannelController {
         } catch (IOException e) {
             return ApiResponse.fail(e.getMessage());
         }
-        
+
         return ApiResponse.ok();
     }
 }
