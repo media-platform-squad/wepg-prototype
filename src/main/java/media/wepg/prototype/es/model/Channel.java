@@ -1,19 +1,22 @@
 package media.wepg.prototype.es.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.Setting;
 
 import java.time.LocalDateTime;
 
 @Document(indexName = "prototype-channels")
+@Setting(replicas = 2)
 @Getter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Channel {
 
-    @Id
+    @Field(type = FieldType.Text, name = "channelName")
     private Long id;
 
     @Field(type = FieldType.Text, name = "channelName")

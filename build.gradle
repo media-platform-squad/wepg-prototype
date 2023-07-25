@@ -32,10 +32,6 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    implementation 'co.elastic.clients:elasticsearch-rest-client:7.15.0'
-    implementation 'co.elastic.clients:elasticsearch-namespace-client:7.15.0'
-    implementation 'co.elastic.clients:elasticsearch-core:7.15.0'
-    implementation 'co.elastic.clients:elasticsearch-transport:7.15.0'
     implementation 'co.elastic.clients:elasticsearch-java:7.17.9'
     implementation 'jakarta.json:jakarta.json-api:2.0.1'
 

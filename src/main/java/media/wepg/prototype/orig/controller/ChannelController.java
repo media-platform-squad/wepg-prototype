@@ -1,22 +1,21 @@
 package media.wepg.prototype.orig.controller;
 
-import media.wepg.prototype.orig.model.Channel;
+import lombok.RequiredArgsConstructor;
+import media.wepg.prototype.orig.model.ChannelOrigin;
 import media.wepg.prototype.orig.service.ChannelService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@Transactional
+@RequiredArgsConstructor
 @RequestMapping("/api/orig/wepg/channel")
 public class ChannelController {
 
@@ -24,24 +23,19 @@ public class ChannelController {
 
     private final ChannelService channelService;
 
-    @Autowired
-    public ChannelController(ChannelService channelService) {
-        this.channelService = channelService;
-    }
-
     @GetMapping
-    public ResponseEntity<List<Channel>> getAllChannels() {
-        List<Channel> allChannels = channelService.getAllChannels();
+    public ResponseEntity<List<ChannelOrigin>> getAllChannels() {
+        List<ChannelOrigin> allChannelOrigins = channelService.getAllChannels();
 
-        logger.info(allChannels.stream().map(Channel::getChannelName).toString());
+        logger.info(allChannelOrigins.stream().map(ChannelOrigin::getChannelName).toString());
 
         return ResponseEntity.ok()
-                .body(allChannels);
+                .body(allChannelOrigins);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Channel> getChannelsById(@PathVariable("id") Long id) {
-        Optional<Channel> channel = channelService.getChannelsByServiceId(id);
+    public ResponseEntity<ChannelOrigin> getChannelsById(@PathVariable("id") Long id) {
+        Optional<ChannelOrigin> channel = channelService.getChannelsByServiceId(id);
 
         return channel
                 .map(value -> ResponseEntity.ok().body(value))

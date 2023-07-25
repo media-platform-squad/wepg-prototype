@@ -1,12 +1,18 @@
 package media.wepg.prototype.es.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.Setting;
 
 import java.time.LocalDateTime;
 
 @Document(indexName = "prototype-programs")
+@Setting(replicas = 2)
+@Getter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Program {
     @Field(type = FieldType.Long, name = "serviceId")
     private Long serviceId;

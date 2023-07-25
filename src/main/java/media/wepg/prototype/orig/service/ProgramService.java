@@ -1,22 +1,18 @@
 package media.wepg.prototype.orig.service;
 
-import media.wepg.prototype.orig.model.Program;
+import lombok.RequiredArgsConstructor;
+import media.wepg.prototype.orig.model.ProgramOrigin;
 import media.wepg.prototype.orig.repository.ProgramRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ProgramService {
     private final ProgramRepository programRepository;
 
-    @Autowired
-    public ProgramService(ProgramRepository programRepository) {
-        this.programRepository = programRepository;
-    }
-
-    public List<Program> getProgramsByServiceId(Long serviceId) {
+    public List<ProgramOrigin> getProgramsByServiceId(Long serviceId) {
         return programRepository.findAllByServiceId(serviceId);
     }
 }

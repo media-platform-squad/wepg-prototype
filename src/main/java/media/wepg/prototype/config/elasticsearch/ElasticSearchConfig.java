@@ -15,9 +15,7 @@ import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.http.ssl.SSLContexts;
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,33 +33,12 @@ import java.util.List;
 public class ElasticSearchConfig {
 
     private final ObjectMapper objectMapper;
+
     private List<String> uris;
     private String username;
     private String password;
-
-
-    @Deprecated
-    @Bean
-    public RestHighLevelClient restHighLevelClient() throws Exception {
-        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
-
-        SSLContext sslContext = SSLContexts.custom()
-                .loadTrustMaterial(new TrustAllStrategy())
-                .build();
-
-        HttpHost[] httpHosts = uris.stream()
-                .map(uri -> new HttpHost(uri, 9200, "http"))
-                .toArray(HttpHost[]::new);
-
-        return new RestHighLevelClient(
-                RestClient.builder(httpHosts)
-                        .setHttpClientConfigCallback(httpClientBuilder ->
-                                httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider)
-                                        .setSSLContext(sslContext)
-                                        .setSSLHostnameVerifier(new NoopHostnameVerifier()))
-        );
-    }
+    private int port;
+    private String scheme;
 
     @Bean
     public ElasticsearchTransport getElasticsearchTransport() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
@@ -75,12 +52,12 @@ public class ElasticSearchConfig {
 
     @Bean
     public RestClient getRestClient() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        var credentials = new UsernamePasswordCredentials(username, password);
+        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
 
         final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(AuthScope.ANY, credentials);
 
-        var sslContext = new SSLContextBuilder()
+        SSLContext sslContext = new SSLContextBuilder()
                 .loadTrustMaterial(null, new TrustAllStrategy())
                 .build();
 
@@ -95,9 +72,10 @@ public class ElasticSearchConfig {
                 .build();
     }
 
+
     private HttpHost[] getEsServerHosts() {
         return uris.stream()
-                .map(uri -> new HttpHost(uri, 9200, "http"))
+                .map(uri -> new HttpHost(uri, port, scheme))
                 .toArray(HttpHost[]::new);
     }
 }

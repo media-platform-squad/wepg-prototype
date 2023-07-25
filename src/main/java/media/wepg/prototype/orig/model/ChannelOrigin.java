@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Table(name = "IEIF_CHANNEL_INFO")
-public class Channel {
+public class ChannelOrigin {
     @Id
     @Column(name = "ID_SVC", nullable = false)
     private Long id;

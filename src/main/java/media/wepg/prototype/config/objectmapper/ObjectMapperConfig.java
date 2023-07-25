@@ -1,4 +1,4 @@
-package media.wepg.prototype.config;
+package media.wepg.prototype.config.objectmapper;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

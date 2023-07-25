@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Table(name = "IEIF_COMPO_INFO")
-public class Program {
+public class ProgramOrigin {
     @Id
     @Column(name = "ID_SVC", nullable = false)
     private Long serviceId;

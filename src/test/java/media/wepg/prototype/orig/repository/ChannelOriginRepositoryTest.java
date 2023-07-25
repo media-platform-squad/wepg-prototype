@@ -1,6 +1,6 @@
 package media.wepg.prototype.orig.repository;
 
-import media.wepg.prototype.orig.model.Channel;
+import media.wepg.prototype.orig.model.ChannelOrigin;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @AutoConfigureDataJpa
 @Transactional
-class ChannelRepositoryTest {
+class ChannelOriginRepositoryTest {
 
     @Autowired
     private ChannelRepository channelRepository;
@@ -25,15 +25,15 @@ class ChannelRepositoryTest {
     @Test
     @DisplayName("전체 채널 개수가 689가 맞는지 확인한다. (07-19 기준)")
     void findAllBy() {
-        List<Channel> allChannels = channelRepository.findAll();
+        List<ChannelOrigin> allChannelOrigins = channelRepository.findAll();
 
-        assertThat(allChannels).hasSize(689);
+        assertThat(allChannelOrigins).hasSize(689);
     }
 
     @Test
     @DisplayName("채널 id로 해당 채널을 올바르게 가져오는지 확인한다. (11번)")
     void findAllById() {
-        Optional<Channel> channelById = channelRepository.findById(11L);
+        Optional<ChannelOrigin> channelById = channelRepository.findById(11L);
 
         channelById.ifPresent(channel -> assertThat(channel.getId()).isEqualTo(11L));
     }
@@ -41,7 +41,7 @@ class ChannelRepositoryTest {
     @Test
     @DisplayName("존재하지 않는 채널을 가져오는 경우 실패한다. (9999번)")
     void findAllyById_fail_none_existing_channel() {
-        Optional<Channel> channelById = channelRepository.findById(9999L);
+        Optional<ChannelOrigin> channelById = channelRepository.findById(9999L);
 
         assertThat(channelById).isEmpty();
     }
