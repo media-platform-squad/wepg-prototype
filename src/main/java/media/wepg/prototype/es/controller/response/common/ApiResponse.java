@@ -23,6 +23,12 @@ public class ApiResponse<T> {
                 HttpStatus.OK);
     }
 
+    public static ResponseEntity<Object> created() {
+        return new ResponseEntity<>(
+                new ApiBody<>(null, ResponseMessage.SUCCESS_MESSAGE),
+                HttpStatus.CREATED);
+    }
+
     public static ResponseEntity<Object> ok() {
         return new ResponseEntity<>(
                 new ApiBody<>(null, ResponseMessage.SUCCESS_MESSAGE),

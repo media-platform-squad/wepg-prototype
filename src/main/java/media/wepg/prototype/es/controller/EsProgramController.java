@@ -26,7 +26,7 @@ public class EsProgramController {
             return ApiResponse.fail(e.getMessage());
         }
 
-        return ApiResponse.ok();
+        return ApiResponse.created();
     }
 
     @GetMapping("/getPrograms")

@@ -40,6 +40,6 @@ public class EsChannelController {
             return ApiResponse.fail(e.getMessage());
         }
 
-        return ApiResponse.ok();
+        return ApiResponse.created();
     }
 }
