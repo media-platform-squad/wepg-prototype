@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -37,7 +38,9 @@ public class EsProgramQuery {
     private static final String PROGRAM_INDEX_NAME = "prototype-programs";
     private static final String SERVICE_ID_FIELD_NAME = "serviceId";
     private static final String EVENT_START_DATE_FIELD_NAME = "eventStartDate";
-
+    private static final String DATE_FORMAT = "yyyyMMdd";
+    private static final String START_TIME = "00:00:000";
+    private static final String END_TIME = "23:59:000";
 
     @Autowired
     public EsProgramQuery(ElasticsearchClient esClient, ProgramRepository programRepository) {
@@ -45,22 +48,35 @@ public class EsProgramQuery {
         this.programRepository = programRepository;
     }
 
-    private static Query getQueryByServiceId(Long serviceId) {
-        return MatchQuery.of(m -> m
-                .field(SERVICE_ID_FIELD_NAME)
-                .query(serviceId)
-        )._toQuery();
+    public List<Program> getDocumentByServiceIdAndEventStartDate(Long serviceId, LocalDateTime startDate) {
+        try {
+            SearchResponse<Program> responseResult = getQueryResultsByServiceIdAndEventStartDate(serviceId, startDate);
+            TotalHits totalHits = responseResult.hits().total();
+
+            resolveResultCount(totalHits);
+            return getResultPrograms(responseResult);
+        } catch (IOException e) {
+            log.error("Error while fetching data from Elasticsearch", e);
+            return Collections.emptyList();
+        }
     }
 
-    private static Query getQueryByEventStartDate(LocalDateTime startDate) {
-        return RangeQuery.of(m -> m
-                .field(EVENT_START_DATE_FIELD_NAME)
-                .from(startDate.format(DateTimeFormatter.ofPattern("yyyyMMdd'00:00:000'")))
-                .to(startDate.format(DateTimeFormatter.ofPattern("yyyyMMdd'23:59:000'")))
-        )._toQuery();
+    private List<Program> getResultPrograms(SearchResponse<Program> responseResult) {
+        List<Program> programResult = new ArrayList<>();
+        List<Hit<Program>> hits = responseResult.hits().hits();
+
+        hits.forEach(hit -> {
+            Program program = hit.source();
+            programResult.add(program);
+            log.info("Found product " + program.getTitleName() + ", score " + hit.score());
+        });
+        return programResult;
     }
 
-    private SearchResponse<Program> getQueryResultsByServiceIdAndEventStartDate(Query byServiceId, Query byEventStartDate) throws IOException {
+    private SearchResponse<Program> getQueryResultsByServiceIdAndEventStartDate(Long serviceId, LocalDateTime startDate) throws IOException {
+        Query byServiceId = getQueryByServiceId(serviceId);
+        Query byEventStartDate = getQueryByEventStartDate(startDate);
+
         return esClient.search(s -> s
                         .index(PROGRAM_INDEX_NAME)
                         .query(q -> q.bool(b -> b
@@ -72,23 +88,21 @@ public class EsProgramQuery {
         );
     }
 
-    public List<Program> getDocumentByServiceIdAndEventStartDate(Long serviceId, LocalDateTime startDate) {
-        List<Program> programResult = new ArrayList<>();
+    private Query getQueryByServiceId(Long serviceId) {
+        return MatchQuery.of(m -> m
+                .field(SERVICE_ID_FIELD_NAME)
+                .query(serviceId)
+        )._toQuery();
+    }
 
-        Query byServiceId = getQueryByServiceId(serviceId);
-        Query byEventStartDate = getQueryByEventStartDate(startDate);
+    private Query getQueryByEventStartDate(LocalDateTime startDate) {
+        String formattedDate = startDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
 
-        try {
-            SearchResponse<Program> responseResult = getQueryResultsByServiceIdAndEventStartDate(byServiceId, byEventStartDate);
-            TotalHits totalHits = responseResult.hits().total();
-
-            resolveResultCount(totalHits);
-            return getResultPrograms(programResult, responseResult);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return programResult;
+        return RangeQuery.of(m -> m
+                .field(EVENT_START_DATE_FIELD_NAME)
+                .from(formattedDate + START_TIME)
+                .to(formattedDate + END_TIME)
+        )._toQuery();
     }
 
     private static void resolveResultCount(TotalHits totalHits) {
@@ -100,17 +114,6 @@ public class EsProgramQuery {
             log.info("There are more than " + totalHits.value() + " results");
         }
     }
-
-    private static List<Program> getResultPrograms(List<Program> programResult, SearchResponse<Program> responseResult) {
-        List<Hit<Program>> hits = responseResult.hits().hits();
-        for (Hit<Program> hit : hits) {
-            Program program = hit.source();
-            programResult.add(program);
-            log.info("Found product " + program.getTitleName() + ", score " + hit.score());
-        }
-        return programResult;
-    }
-
 
     public void fetchAndIndexProgramData() throws IOException {
         int page = 0;
@@ -149,13 +152,13 @@ public class EsProgramQuery {
         try {
             bulkResponse = bulkBatchData(programOrigins);
             BulkResponseResolver.resolveBulkResponse(bulkResponse, log);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    private BulkResponse bulkBatchData(List<ProgramOrigin> data) throws RuntimeException, IOException {
+    private BulkResponse bulkBatchData(List<ProgramOrigin> data) throws Exception {
         BulkRequest.Builder br = new BulkRequest.Builder();
 
         data.forEach(d -> br.operations(op -> op
