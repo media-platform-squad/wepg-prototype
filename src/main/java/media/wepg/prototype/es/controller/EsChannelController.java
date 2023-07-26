@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import media.wepg.prototype.es.controller.response.common.ApiResponse;
 import media.wepg.prototype.es.model.Channel;
 import media.wepg.prototype.es.service.EsChannelService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -17,7 +18,7 @@ public class EsChannelController {
     private final EsChannelService channelService;
 
     @GetMapping("/getDocument")
-    public ApiResponse<Object> getDocumentById(@RequestParam("id") Long id) {
+    public ResponseEntity<Object> getDocumentById(@RequestParam("id") Long id) {
         Optional<Channel> channelById;
 
         try {
@@ -28,11 +29,11 @@ public class EsChannelController {
 
         return channelById
                 .map(ApiResponse::ok)
-                .orElseGet(ApiResponse::fail);
+                .orElseGet(ApiResponse::notFound);
     }
 
     @PostMapping("/updateAllChannels")
-    public ApiResponse<Object> updateAllChannels() {
+    public ResponseEntity<Object> updateAllChannels() {
         try {
             channelService.updateChannelData();
         } catch (IOException e) {

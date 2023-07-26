@@ -1,47 +1,48 @@
 package media.wepg.prototype.es.controller.response.common;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @Data
 @Builder
 @Getter
 public class ApiResponse<T> {
 
-   private ApiHeader header;
-   private ApiBody<Object> body;
+    private ApiBody<Object> body;
 
-   public ApiResponse(ApiHeader header, ApiBody<Object> body) {
-      this.header = header;
-      this.body = body;
-   }
+    public ApiResponse(ApiBody<Object> body) {
+        this.body = body;
+    }
 
-   public ApiResponse(ApiHeader header){
-      this.header = header;
-   }
+    public static ResponseEntity<Object> ok(Object data) {
+        return new ResponseEntity<>(
+                new ApiBody<>(data, ResponseMessage.SUCCESS_MESSAGE),
+                HttpStatus.OK);
+    }
 
+    public static ResponseEntity<Object> ok() {
+        return new ResponseEntity<>(
+                new ApiBody<>(null, ResponseMessage.SUCCESS_MESSAGE),
+                HttpStatus.OK);
+    }
 
-   public static <T> ApiResponse<T> ok(Object data){
-      return new ApiResponse<>(
-              new ApiHeader(StatusCode.OK, ResponseMessage.SUCCESS_MESSAGE),
-              new ApiBody<>(data, null)
-      );
-   }
+    public static ResponseEntity<Object> notFound(String errorMessage) {
+        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
+    }
 
-   public static <T> ApiResponse<T> ok(){
-      return new ApiResponse<>(
-              new ApiHeader(StatusCode.OK, ResponseMessage.SUCCESS_MESSAGE),
-              new ApiBody<>(null, null)
-      );
-   }
+    public static ResponseEntity<Object> notFound() {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
-   public static <T> ApiResponse<T> fail(String errorMessage){
-      return new ApiResponse<>(new ApiHeader(StatusCode.NOT_FOUND, ResponseMessage.FAILED_MESSAGE),
-              new ApiBody<>(null, errorMessage)
-      );
-   }
+    public static ResponseEntity<Object> fail() {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
-   public static <T> ApiResponse<T> fail(){
-      return new ApiResponse<>(new ApiHeader(StatusCode.NOT_FOUND, ResponseMessage.FAILED_MESSAGE));
-   }
+    public static ResponseEntity<Object> fail(String errorMessage) {
+        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
+    }
 
 }

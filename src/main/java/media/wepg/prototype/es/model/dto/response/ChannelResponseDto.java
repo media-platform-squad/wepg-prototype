@@ -1,14 +1,11 @@
 package media.wepg.prototype.es.model.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import media.wepg.prototype.es.model.Channel;
 
 import java.time.LocalDateTime;
 
 @Data
-@Builder
 public class ChannelResponseDto {
 
     private Long id;
@@ -19,8 +16,7 @@ public class ChannelResponseDto {
     private LocalDateTime insertDate;
     private LocalDateTime updateDate;
 
-
-    public ChannelResponseDto(Channel channel){
+    public ChannelResponseDto(Channel channel) {
         this.id = channel.getId();
         this.channelName = channel.getChannelName();
         this.serviceType = channel.getServiceType();

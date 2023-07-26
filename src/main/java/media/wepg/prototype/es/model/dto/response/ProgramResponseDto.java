@@ -1,14 +1,11 @@
 package media.wepg.prototype.es.model.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import media.wepg.prototype.es.model.Program;
 
 import java.time.LocalDateTime;
 
 @Data
-@Builder
 public class ProgramResponseDto {
 
     private Long serviceId;
@@ -33,7 +30,6 @@ public class ProgramResponseDto {
         this.titleName = program.getTitleName();
         this.synopsisName = program.getSynopsisName();
         this.directorName = program.getDirectorName();
-        this.actorName = program.getDirectorName();
         this.actorName = program.getActorName();
         this.songName = program.getSongName();
         this.singerName = program.getSingerName();

@@ -2,14 +2,13 @@ package media.wepg.prototype.es.controller;
 
 import lombok.RequiredArgsConstructor;
 import media.wepg.prototype.es.controller.response.common.ApiResponse;
-import media.wepg.prototype.es.model.Program;
 import media.wepg.prototype.es.model.dto.response.ProgramGroupByChannelResponseDto;
 import media.wepg.prototype.es.model.dto.response.ProgramResponseDto;
 import media.wepg.prototype.es.service.EsProgramService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -17,10 +16,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EsProgramController {
 
-   private final EsProgramService programService;
+    private final EsProgramService programService;
 
     @PostMapping("/updateAllPrograms")
-    public ApiResponse<Object> updateAllPrograms() {
+    public ResponseEntity<Object> updateAllPrograms() {
         try {
             programService.updateProgramData();
         } catch (IOException e) {
@@ -31,28 +30,28 @@ public class EsProgramController {
     }
 
     @GetMapping("/getPrograms")
-    public ApiResponse<Object> getProgramsByServicesAndEventStartDate(
+    public ResponseEntity<Object> getProgramsByServicesAndEventStartDate(
             @RequestParam("serviceId") String serviceIds,
             @RequestParam("eventStartDate") String dateString) {
 
         List<ProgramGroupByChannelResponseDto> data = programService.getProgramsByServices(serviceIds, dateString);
 
         if (data.isEmpty()) {
-            return ApiResponse.fail();
+            return ApiResponse.notFound();
         }
-           return ApiResponse.ok(data);
+        return ApiResponse.ok(data);
     }
 
 
-    @GetMapping("/getPrograms")
-    public ApiResponse<Object> getProgramsByServiceIdAndEventStartDate(
+    @GetMapping("/getProgram")
+    public ResponseEntity<Object> getProgramsByServiceIdAndEventStartDate(
             @RequestParam("serviceId") String serviceIds,
             @RequestParam("eventStartDate") String dateString) {
 
         List<ProgramResponseDto> data = programService.getProgramsByServiceAndEventStartDate(serviceIds, dateString);
 
         if (data.isEmpty()) {
-            return ApiResponse.fail();
+            return ApiResponse.notFound();
         }
         return ApiResponse.ok(data);
     }

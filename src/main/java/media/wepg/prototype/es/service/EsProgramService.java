@@ -5,8 +5,8 @@ import media.wepg.prototype.es.model.Channel;
 import media.wepg.prototype.es.model.Program;
 import media.wepg.prototype.es.model.dto.response.ProgramGroupByChannelResponseDto;
 import media.wepg.prototype.es.model.dto.response.ProgramResponseDto;
-import media.wepg.prototype.es.repository.query.EsChannelQuery;
-import media.wepg.prototype.es.repository.query.EsProgramQuery;
+import media.wepg.prototype.es.repository.EsChannelQuery;
+import media.wepg.prototype.es.repository.EsProgramQuery;
 import media.wepg.prototype.es.util.DateTimeConverter;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +25,7 @@ public class EsProgramService {
 
     private static final String DELIMITER = ",";
 
+
     public void updateProgramData() throws IOException {
         esProgramQuery.fetchAndIndexProgramData();
     }
@@ -35,21 +36,27 @@ public class EsProgramService {
         List<ProgramGroupByChannelResponseDto> data = new ArrayList<>();
         String[] ids = serviceIds.strip().split(DELIMITER);
 
-        Arrays.stream(ids).forEach(id -> {
-            Long idValue = Long.valueOf(id);
+        Arrays.stream(ids).map(Long::valueOf).forEach(idValue -> {
             List<Program> programs = esProgramQuery.getDocumentByServiceIdAndEventStartDate(idValue, eventStartDate);
             Optional<Channel> channelById;
-            try {
-                channelById = esChannelQuery.getDocumentById(idValue);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            if(programs.size() > 0 && channelById.isPresent()) {
+            channelById = getChannel(idValue);
+
+            if (channelById.isPresent() && programs.isEmpty()) {
                 data.add(new ProgramGroupByChannelResponseDto(channelById.get(), programs));
             }
         });
 
         return data;
+    }
+
+    private Optional<Channel> getChannel(Long idValue) {
+        Optional<Channel> channelById;
+        try {
+            channelById = esChannelQuery.getDocumentById(idValue);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return channelById;
     }
 
     public List<ProgramResponseDto> getProgramsByServiceAndEventStartDate(String serviceIds, String dateString) {
@@ -62,7 +69,7 @@ public class EsProgramService {
             Long idValue = Long.valueOf(id);
             List<Program> programsByServiceId = esProgramQuery.getDocumentByServiceIdAndEventStartDate(idValue, eventStartDate);
 
-            if(programsByServiceId.size() > 0) {
+            if (!programsByServiceId.isEmpty()) {
                 programsByServiceId.forEach(program -> data.add(new ProgramResponseDto(program)));
             }
         });

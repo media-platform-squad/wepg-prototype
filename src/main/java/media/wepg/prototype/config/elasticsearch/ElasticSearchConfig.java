@@ -75,7 +75,7 @@ public class ElasticSearchConfig {
 
     private HttpHost[] getEsServerHosts() {
         return uris.stream()
-                .map(uri -> new HttpHost(uri, port, scheme))
+                .map(uri -> new HttpHost(uri, 9200, scheme))
                 .toArray(HttpHost[]::new);
     }
 }
