@@ -1,6 +1,7 @@
 package media.wepg.prototype.orig.repository;
 
-import media.wepg.prototype.orig.model.ProgramOrigin;
+import media.wepg.prototype.model.ProgramOrigin;
+import media.wepg.prototype.repository.ProgramRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
