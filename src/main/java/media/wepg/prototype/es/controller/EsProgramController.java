@@ -29,7 +29,7 @@ public class EsProgramController {
         return ApiResponse.created();
     }
 
-    @GetMapping("/getPrograms")
+    @GetMapping("/getProgramsGroupByChannel")
     public ResponseEntity<Object> getProgramsByServicesAndEventStartDate(
             @RequestParam("serviceId") String serviceIds,
             @RequestParam("eventStartDate") String dateString) {
@@ -43,7 +43,7 @@ public class EsProgramController {
     }
 
 
-    @GetMapping("/getProgram")
+    @GetMapping("/getPrograms")
     public ResponseEntity<Object> getProgramsByServiceIdAndEventStartDate(
             @RequestParam("serviceId") String serviceIds,
             @RequestParam("eventStartDate") String dateString) {

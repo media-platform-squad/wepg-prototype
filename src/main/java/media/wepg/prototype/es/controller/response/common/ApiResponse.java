@@ -35,13 +35,14 @@ public class ApiResponse<T> {
                 HttpStatus.OK);
     }
 
+    public static ResponseEntity<Object> notFound() {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
     public static ResponseEntity<Object> notFound(String errorMessage) {
         return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
     }
 
-    public static ResponseEntity<Object> notFound() {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
 
     public static ResponseEntity<Object> fail() {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

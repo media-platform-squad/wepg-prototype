@@ -17,8 +17,8 @@ public class EsChannelController {
 
     private final EsChannelService channelService;
 
-    @GetMapping("/getDocument")
-    public ResponseEntity<Object> getDocumentById(@RequestParam("id") Long id) {
+    @GetMapping("/getChannel")
+    public ResponseEntity<Object> getChannelById(@RequestParam("id") Long id) {
         Optional<Channel> channelById;
 
         try {
